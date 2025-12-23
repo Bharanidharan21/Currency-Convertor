@@ -1,0 +1,10 @@
+jbody {
+    font-family: Arial;
+    padding: 40px;
+    background-color: #f4f4f4;
+}
+
+input, button {
+    padding: 8px;
+    margin: 5px;
+}
