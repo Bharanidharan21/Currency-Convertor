@@ -1,47 +1,48 @@
 package com.bharani.security;
 
-import java.io.IOException;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
+
 @Component
 public class ApiKeyFilter extends OncePerRequestFilter {
 
-    @Value("${api.key}")
-    private String apiKey;
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        return path.startsWith("/index.html")
-            || path.startsWith("/app.js")
-            || path.startsWith("/css")
-            || path.startsWith("/h2-console");
-    }
+    @Value("${app.api.key}")
+    private String apiKeyValue;
 
+    private static final String HEADER_NAME = "X-API-KEY";
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
             throws ServletException, IOException {
 
-        String requestApiKey = request.getHeader("X-API-KEY");
+        String path = request.getRequestURI();
 
-        if (requestApiKey == null || !requestApiKey.equals(apiKey)) {
+        // ✅ Allow Swagger
+        if (path.startsWith("/swagger") || path.startsWith("/v3/api-docs")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String apiKey = request.getHeader(HEADER_NAME);
+
+        if (!apiKeyValue.equals(apiKey)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.getWriter().write("Forbidden");
+            response.getWriter().write("Invalid API Key");
             return;
         }
 
         filterChain.doFilter(request, response);
     }
 }
+
+
 
