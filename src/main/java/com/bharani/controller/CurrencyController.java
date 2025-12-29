@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.bharani.dto.ConvertResponse;
 import com.bharani.entity.ConversionHistory;
 import com.bharani.service.CurrencyService;
 @RestController
@@ -17,12 +18,13 @@ public class CurrencyController {
 
     // Convert currency
     @PostMapping("/convert")
-    public ConversionHistory convert(
+    public ConvertResponse convert(
             @RequestParam String from,
             @RequestParam String to,
             @RequestParam double amount) {
 
-        return currencyService.convert(from, to, amount);
+        ConversionHistory history = currencyService.convert(from, to, amount);
+        return new ConvertResponse(history.getConvertedAmount());
     }
 
     // ✅ View history

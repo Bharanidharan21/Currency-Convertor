@@ -25,6 +25,13 @@ public class ApiKeyFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String path = request.getRequestURI();
+        String method = request.getMethod();
+
+        // ✅ Allow preflight CORS requests
+        if ("OPTIONS".equalsIgnoreCase(method)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // ✅ Allow Swagger
         if (path.startsWith("/swagger") || path.startsWith("/v3/api-docs")) {
