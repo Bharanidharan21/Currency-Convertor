@@ -9,8 +9,7 @@ import com.bharani.entity.ConversionHistory;
 import com.bharani.service.CurrencyService;
 @RestController
 @RequestMapping("/api")
-
-
+@CrossOrigin("*")
 public class CurrencyController {
 
     @Autowired
